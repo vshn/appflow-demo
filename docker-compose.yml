@@ -1,0 +1,7 @@
+version: '3.4'
+services:
+  myapp:
+    ports:
+      - "8080:8080"
+    environment:
+      - admin_pw=$ADMIN_PW
