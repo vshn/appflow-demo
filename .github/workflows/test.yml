@@ -1,4 +1,4 @@
-name: 'Build and Deploy to test'
+name: 'Build and deploy to test'
 
 on:
   push:
