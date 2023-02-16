@@ -22,7 +22,7 @@ We think there should be easy-to-use tools that can cover the common use cases.
 * Do not try support *every* potential use case (sorry) to keep complexity at bay
 * Usable by developers with minimal Kubernetes experience
 * Minimal requirements on the Kubernetes target cluster (no need to install operators, special configuration, ...)
-* Processes are transparent to the developers (no external build systems, webhooks, ...)
+* Processes are observable by the developers (no intransparent build systems, webhooks, ...)
 * Based on tools the developer is likely to already know
 
 ## Which tools does it use?
