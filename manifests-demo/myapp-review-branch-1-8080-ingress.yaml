@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+  creationTimestamp: null
+  labels:
+    k8ify.ref-slug: review-branch-1
+    k8ify.service: myapp
+  name: myapp-review-branch-1-8080
+spec:
+  rules:
+  - host: appflow-demo-review-branch-1.apps.cloudscale-lpg-2.appuio.cloud
+    http:
+      paths:
+      - backend:
+          service:
+            name: myapp-review-branch-1
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - appflow-demo-review-branch-1.apps.cloudscale-lpg-2.appuio.cloud
+    secretName: myapp-review-branch-1-8080-tls
+status:
+  loadBalancer: {}

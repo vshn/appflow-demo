@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    k8ify.ref-slug: review-branch-1
+    k8ify.service: myapp
+  name: myapp-review-branch-1
+spec:
+  selector:
+    matchLabels:
+      k8ify.ref-slug: review-branch-1
+      k8ify.service: myapp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8ify.ref-slug: review-branch-1
+        k8ify.service: myapp
+    spec:
+      containers:
+      - envFrom:
+        - secretRef:
+            name: myapp-review-branch-1-env
+        image: image-registry.openshift-image-registry.svc:5000/appflow-demo-test/appflow-demo:review-branch-1
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          periodSeconds: 30
+          successThreshold: 1
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 60
+        name: myapp-review-branch-1
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 10m
+            memory: 256Mi
+        startupProbe:
+          failureThreshold: 30
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 60
+      restartPolicy: Always
+status: {}
