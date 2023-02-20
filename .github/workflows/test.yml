@@ -1,35 +1,32 @@
-name: 'Build and deploy to test'
-
-on:
-  push:
-    branches:
-      - '[A-Z]+-**'
-
 env:
   KUBECONFIG: /tmp/github-ci.kubeconfig
   REGISTRY: registry.cloudscale-lpg-2.appuio.cloud
   TEST_DOMAIN: apps.cloudscale-lpg-2.appuio.cloud
-
 jobs:
-  builddeploy:
+  build:
     environment: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup
-        with:
-          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_TEST }}
-      - uses: ./.github/actions/build
-        with:
-          REGISTRY: ${{ env.REGISTRY }}
-      - name: Generate Deployment
-        env:
-          NEWLINE: "\n" # just a workaround to get a newline into the command below
-        run: |
-          jq -r 'to_entries | map("\(.key)=\(.value|tostring|tojson)") | .[]' > .composeenv <<'EOF' ${{ env.NEWLINE }}${{ toJson(secrets) }}${{ env.NEWLINE }}EOF
-          docker run -v "${PWD}:/data" -w /data --env-file <(env) quay.io/vshn/k8ify:latest /bin/k8ify test ${CI_COMMIT_REF_SLUG} --shell-env-file .composeenv --modified-image '${{ env.NAMESPACE }}/${{ env.CI_PROJECT_NAME }}:${{ env.CI_COMMIT_REF_SLUG }}'
-          rm .composeenv
-          kubectl diff -f manifests/ || true
-      - name: Deploy
-        run: |
-          kubectl apply -f manifests/ || true
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/setup
+      with:
+        KUBECONFIG_DATA: "${{ secrets.KUBECONFIG_TEST }}"
+    - uses: ./.github/actions/build
+      with:
+        REGISTRY: "${{ env.REGISTRY }}"
+    - env:
+        NEWLINE: |2+
+
+      name: Generate Deployment
+      run: |
+        jq -r 'to_entries | map("\(.key)=\(.value|tostring|tojson)") | .[]' > .composeenv <<'EOF' ${{ env.NEWLINE }}${{ toJson(secrets) }}${{ env.NEWLINE }}EOF
+        docker run -v "${PWD}:/data" -w /data --env-file <(env) quay.io/vshn/k8ify:latest /bin/k8ify test ${CI_COMMIT_REF_SLUG} --shell-env-file .composeenv --modified-image '${{ env.NAMESPACE }}/${{ env.CI_PROJECT_NAME }}:${{ env.CI_COMMIT_REF_SLUG }}'
+        rm .composeenv
+        kubectl diff -f manifests/ || true
+    - name: Deploy
+      run: kubectl apply -f manifests/ || true
+name: Build and deploy to test
+"on":
+  push:
+    branches:
+    - "[A-Z]+-**"
