@@ -46,4 +46,5 @@ AppFlow uses:
 * A GitHub pipeline is available in [.github](https://github.com/vshn/appflow-demo/blob/master/.github)
 * This repository has two environments set up ('test' and 'prod'). The 'test' environment contains the secrets `KUBECONFIG_TEST` and `ADMIN_PW`, and the 'prod' environment contains `KUBECONFIG_PROD` and also `ADMIN_PW`. Sorry you'll have to trust us on this because they're, well, secrets.
 * We use [APPUiO Cloud](https://appuio.cloud) as a deployment target, which is based on OpenShift (a Kubernetes flavor), but any Kubernetes cluster should do, provided that it is reachable from wherever the CI/CD pipeline runs. You can test the running application here (prod): [appflow.demo.vshn.net](https://appflow.demo.vshn.net/). The test instances are public as well, but their URLs can change.
-* We'll add some screenshots from the Web UI in the future.
+* Web UI, overview over all environments: ![Environments](screenshots/web-ui-environments.png)
+* Web UI, overview over deployed branches in `test` environment: ![Branches](screenshots/web-ui-branches.png)
