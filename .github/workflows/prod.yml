@@ -20,7 +20,7 @@ jobs:
       name: Generate Deployment
       run: |
         jq -r 'to_entries | map("\(.key)=\(.value|tostring|tojson)") | .[]' > .composeenv <<'EOF' ${{ env.NEWLINE }}${{ toJson(secrets) }}${{ env.NEWLINE }}EOF
-        docker run -v "${PWD}:/data" -w /data --env-file <(env) quay.io/vshn/k8ify:latest /bin/k8ify test prod --shell-env-file .composeenv --modified-image '${{ env.NAMESPACE }}/${{ env.CI_PROJECT_NAME }}:${{ env.CI_COMMIT_REF_SLUG }}'
+        docker run -v "${PWD}:/data" -w /data --env-file <(env) quay.io/vshn/k8ify:latest /bin/k8ify prod prod --shell-env-file .composeenv --modified-image '${{ env.NAMESPACE }}/${{ env.CI_PROJECT_NAME }}:${{ env.CI_COMMIT_REF_SLUG }}'
         rm .composeenv
         kubectl diff -f manifests/ || true
 name: Build and preview deployment to prod
