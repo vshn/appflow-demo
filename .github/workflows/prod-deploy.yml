@@ -9,7 +9,7 @@ jobs:
     steps:
     - name: Ensure we are running on a tag
       run: "test '${{ github.ref_type }}' == 'tag'"
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: ./.github/actions/setup
       with:
         KUBECONFIG_DATA: "${{ secrets.KUBECONFIG_PROD }}"
