@@ -3,6 +3,7 @@ services:
     image: image-registry.openshift-image-registry.svc:5000/$NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_REF_SLUG
     labels:
       k8ify.expose: $CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG.$TEST_DOMAIN
+      k8ify.Ingress.annotations.cert-manager.io/cluster-issuer: letsencrypt-production
     deploy:
       resources:
         reservations:
