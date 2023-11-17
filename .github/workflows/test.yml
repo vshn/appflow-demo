@@ -13,6 +13,7 @@ jobs:
         KUBECONFIG_DATA: "${{ secrets.KUBECONFIG_TEST }}"
     - uses: ./.github/actions/build
       with:
+        IMGNAME: "${{ env.CI_PROJECT_NAME }}"
         REGISTRY: "${{ env.REGISTRY }}"
     - env:
         NEWLINE: |2+
