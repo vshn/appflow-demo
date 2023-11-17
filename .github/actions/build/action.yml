@@ -1,8 +1,12 @@
 env:
   KUBECONFIG: /tmp/github-ci.kubeconfig
 inputs:
+  IMGNAME:
+    required: true
   REGISTRY:
     required: true
+  TARGET:
+    required: false
 name: Build
 runs:
   steps:
@@ -13,5 +17,6 @@ runs:
     with:
       provenance: false
       push: true
-      tags: "${{ inputs.REGISTRY }}/${{ env.NAMESPACE }}/${{ env.CI_PROJECT_NAME }}:${{ env.CI_COMMIT_REF_SLUG }}"
+      tags: "${{ inputs.REGISTRY }}/${{ env.NAMESPACE }}/${{ inputs.IMGNAME }}:${{ env.CI_COMMIT_REF_SLUG }}"
+      target: "${{ inputs.TARGET }}"
   using: composite
