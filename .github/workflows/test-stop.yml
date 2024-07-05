@@ -12,7 +12,7 @@ jobs:
     - env: {}
       name: k8ify stop
       run: |
-        kubectl delete deployments,statefulsets,secrets,persistentvolumeclaims,ingresses,services,cronjobs -l "k8ify.ref-slug=${CI_COMMIT_REF_SLUG}"
+        kubectl delete deployments,statefulsets,secrets,persistentvolumeclaims,ingresses,services,cronjobs,poddisruptionbudgets -l "k8ify.ref-slug=${CI_COMMIT_REF_SLUG}"
         kubectl delete claim -l "k8ify.ref-slug=${CI_COMMIT_REF_SLUG}" || true
 name: Stop test
 "on":
