@@ -9,3 +9,6 @@ services:
         reservations:
           cpus: "0.01"
           memory: 256M
+
+x-targetCfg:
+  appsDomain: "*.apps.cloudscale-lpg-2.appuio.cloud"
