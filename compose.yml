@@ -5,3 +5,5 @@ services:
       - "8080:8080"
     environment:
       - admin_pw=$ADMIN_PW
+    labels:
+      k8ify.annotations.IMAGE_DIGEST: $IMAGE_DIGEST

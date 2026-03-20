@@ -11,11 +11,13 @@ jobs:
     - uses: ./.github/actions/setup
       with:
         KUBECONFIG_DATA: "${{ secrets.KUBECONFIG_PROD }}"
-    - uses: ./.github/actions/build
+    - id: build
+      uses: ./.github/actions/build
       with:
         IMGNAME: "${{ env.CI_PROJECT_NAME }}"
         REGISTRY: "${{ env.REGISTRY }}"
     - env:
+        IMAGE_DIGEST: "${{ steps.build.outputs.IMAGE_DIGEST || 'not built in this job' }}"
         NEWLINE: |2+
 
       name: k8ify preview
