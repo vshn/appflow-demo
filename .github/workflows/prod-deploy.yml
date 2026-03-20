@@ -14,6 +14,7 @@ jobs:
       with:
         KUBECONFIG_DATA: "${{ secrets.KUBECONFIG_PROD }}"
     - env:
+        IMAGE_DIGEST: "${{ steps.build.outputs.IMAGE_DIGEST || 'not built in this job' }}"
         NEWLINE: |2+
 
       name: k8ify deploy
