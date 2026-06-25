@@ -68,5 +68,5 @@ name: Build and deploy to test
 "on":
   push:
     branches:
-    - "[A-Z]+-**"
+    - "**"
   workflow_dispatch: {}
