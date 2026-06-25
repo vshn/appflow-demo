@@ -10,6 +10,11 @@ jobs:
       with:
         KUBECONFIG_DATA: "${{ secrets.KUBECONFIG_TEST }}"
     - env: {}
+      name: Helm Chart stop
+      run: |
+        cp "${KUBECONFIG}" ".github-ci.kubeconfig"
+        docker run -v "${PWD}:/data" -w /data ghcr.io/appuio/helm-v4:latest /bin/bash -c "cp .github-ci.kubeconfig /tmp/github-ci.kubeconfig; chmod 400 /tmp/github-ci.kubeconfig; /bin/helm uninstall '${CI_PR_HEAD_REF_SLUG}' --namespace '${NAMESPACE}' --kubeconfig /tmp/github-ci.kubeconfig"
+    - env: {}
       name: k8ify stop
       run: |
         kubectl delete deployments,statefulsets,secrets,persistentvolumeclaims,ingresses,services,cronjobs,poddisruptionbudgets -l "k8ify.ref-slug=${CI_COMMIT_REF_SLUG}"

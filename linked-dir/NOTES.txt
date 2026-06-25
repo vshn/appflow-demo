@@ -1,0 +1,9 @@
+Release:
+{{ .Release | toYaml }}
+Template:
+{{ .Template | toYaml }}
+Capabilities:
+{{ .Capabilities | toYaml }}
+Chart:
+{{ .Chart | toYaml }}
+IMAGE_DIGEST: {{ .Values.env.IMAGE_DIGEST }}

@@ -31,6 +31,21 @@ jobs:
         IMAGE_DIGEST: "${{ steps.build.outputs.IMAGE_DIGEST || 'not built in this job' }}"
         NEWLINE: |2+
 
+      name: Helm Chart preview
+      run: |
+        jq -n '.env=(env | with_entries(select(.key | startswith("KUBECONFIG_") | not)))' > ${PWD}/empty-helm-chart/env.yaml
+        jq 'select(.!=null)|{vars:.,env:.}' > "${PWD}/empty-helm-chart/vars.yaml" <<'EOF' ${{ env.NEWLINE }}${{ toJson(vars) }}${{ env.NEWLINE }}EOF
+        jq 'select(.!=null)|{secrets:.,env:.}' > "${PWD}/empty-helm-chart/secrets.yaml" <<'EOF' ${{ env.NEWLINE }}${{ toJson(secrets) }}${{ env.NEWLINE }}EOF
+        jq '.env | keys' ${PWD}/empty-helm-chart/env.yaml
+        jq '.env | keys' ${PWD}/empty-helm-chart/vars.yaml
+        jq '.env | keys' ${PWD}/empty-helm-chart/secrets.yaml
+
+        cp "${KUBECONFIG}" ".github-ci.kubeconfig"
+        docker run -v "${PWD}:/data" -w /data ghcr.io/appuio/helm-v4:latest /bin/bash -c "cp .github-ci.kubeconfig /tmp/github-ci.kubeconfig; chmod 400 /tmp/github-ci.kubeconfig; /bin/helm dependency update /data/empty-helm-chart; HELM_DIFF_USE_UPGRADE_DRY_RUN=true /bin/helm diff upgrade '${CI_COMMIT_REF_SLUG}' /data/empty-helm-chart --namespace '${NAMESPACE}' --values "/data/empty-helm-chart/values.yaml" --values "/data/empty-helm-chart/env.yaml" --values /data/empty-helm-chart/vars.yaml --values /data/empty-helm-chart/secrets.yaml --kubeconfig /tmp/github-ci.kubeconfig --allow-unreleased"
+    - env:
+        IMAGE_DIGEST: "${{ steps.build.outputs.IMAGE_DIGEST || 'not built in this job' }}"
+        NEWLINE: |2+
+
       name: k8ify deploy
       run: |
         jq -r 'try to_entries | map("\(.key)=\(.value|tostring|tojson)") | .[]' > .composeenv <<'EOF' ${{ env.NEWLINE }}${{ toJson(vars) }}${{ env.NEWLINE }}EOF
@@ -38,6 +53,17 @@ jobs:
         docker run -v "${PWD}:/data" -w "/data" --env-file <(env) ghcr.io/vshn/k8ify:latest /bin/k8ify test ${CI_COMMIT_REF_SLUG} --shell-env-file /data/.composeenv --modified-image '${{ env.NAMESPACE }}/${{ env.CI_PROJECT_NAME }}:${{ env.CI_COMMIT_REF_SLUG }}'
         rm .composeenv
         kubectl apply -f "${PWD}/manifests/"
+    - env:
+        IMAGE_DIGEST: "${{ steps.build.outputs.IMAGE_DIGEST || 'not built in this job' }}"
+        NEWLINE: |2+
+
+      name: Helm Chart deploy
+      run: |
+        jq -n '.env=(env | with_entries(select(.key | startswith("KUBECONFIG_") | not)))' > ${PWD}/empty-helm-chart/env.yaml
+        jq 'select(.!=null)|{vars:.,env:.}' > "${PWD}/empty-helm-chart/vars.yaml" <<'EOF' ${{ env.NEWLINE }}${{ toJson(vars) }}${{ env.NEWLINE }}EOF
+        jq 'select(.!=null)|{secrets:.,env:.}' > "${PWD}/empty-helm-chart/secrets.yaml" <<'EOF' ${{ env.NEWLINE }}${{ toJson(secrets) }}${{ env.NEWLINE }}EOF
+        cp "${KUBECONFIG}" ".github-ci.kubeconfig"
+        docker run -v "${PWD}:/data" -w /data ghcr.io/appuio/helm-v4:latest /bin/bash -c "cp .github-ci.kubeconfig /tmp/github-ci.kubeconfig; chmod 400 /tmp/github-ci.kubeconfig; /bin/helm dependency update /data/empty-helm-chart; /bin/helm upgrade --install '${CI_COMMIT_REF_SLUG}' /data/empty-helm-chart --namespace '${NAMESPACE}' --values "/data/empty-helm-chart/values.yaml" --values "/data/empty-helm-chart/env.yaml" --values /data/empty-helm-chart/vars.yaml --values /data/empty-helm-chart/secrets.yaml --kubeconfig /tmp/github-ci.kubeconfig"
 name: Build and deploy to test
 "on":
   push:

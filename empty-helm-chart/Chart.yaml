@@ -1,0 +1,6 @@
+apiVersion: v2
+name: empty-helm-chart
+description: An empty helm chart
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
